@@ -1,3 +1,13 @@
+# Installation & setup
+Navigate to the root of the project and run:
+- `./run_all.sh`
+
+# Testing
+Navigate to the frontend directory and run:
+- `.venv/bin/python -m pytest`
+
+# Original Test Assignment Instructions
+
 Welcome to test assignment for Syyclops.
 
 This test is split into 2 sections, React and Python.
