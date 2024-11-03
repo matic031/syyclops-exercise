@@ -3,7 +3,7 @@ Navigate to the root of the project and run:
 - `./run_all.sh`
 
 # Testing
-Navigate to the frontend directory and run:
+Navigate to the backend directory and run:
 - `.venv/bin/python -m pytest`
 
 # Original Test Assignment Instructions
