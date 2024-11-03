@@ -1,38 +1,34 @@
-from typing import List, Union
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 from users import get_users
-from schemas import User
+from schemas import User, UserUpdate
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+origin = [os.getenv("APP_ORIGIN_URL", "http://localhost:3000")]
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origin,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
 
 users_db = [User(**user) for user in get_users()]
 
 
-@app.get("/users", response_model=List[User])
-def list_users(limit: int = 20):
-    return users_db[:limit]
-
-
-@app.put("/users/{user_id}", response_model=User)
-def update_user_endpoint(user_id: int, user: User):
-    for index, existing_user in enumerate(users_db):
-        if existing_user.id == user_id:
-            updated_data = user.model_dump(exclude_unset=True)
-            for key, value in updated_data.items():
-                setattr(existing_user, key, value)
-            users_db[index] = existing_user
-            return existing_user
-    raise HTTPException(status_code=404, detail="User not found")
-
-
 @app.get("/users/search", response_model=List[User])
 def search_users(
-    query: Union[str, int] = Query(
-        ..., description="Search by ID, first name, or last name"
-    )
+    query: str = Query(..., description="Search by ID, first name, or last name")
 ):
     search_results = []
-    query_str = str(query).lower()
+    query_str = query.lower()
 
     for user in users_db:
         if query_str in str(user.id):
@@ -53,3 +49,29 @@ def search_users(
         )
 
     return search_results
+
+
+@app.get("/users/{user_id}", response_model=User)
+def get_user_by_id(user_id: int):
+    user = next((u for u in users_db if u.id == user_id), None)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
+@app.put("/users/{user_id}", response_model=User)
+def update_user(user_id: int, user_update: User):
+    user = next((u for u in users_db if u.id == user_id), None)
+    if user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    updated_data = user_update.model_dump(exclude_unset=True)
+    for key, value in updated_data.items():
+        setattr(user, key, value)
+
+    return user
+
+
+@app.get("/users", response_model=List[User])
+def list_users(limit: int = 20):
+    return users_db[:limit]
