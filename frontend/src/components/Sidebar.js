@@ -32,7 +32,7 @@ function Sidebar({ onUserSelect, closeSidebar, isFullScreen, users }) {
             const userData = await fetchUserById(user.id);
             onUserSelect(userData);
             if (isFullScreen) {
-                closeSidebar(); // Close sidebar only on mobile view
+                closeSidebar();
             }
         } catch (error) {
             console.error("Failed to fetch user data", error);

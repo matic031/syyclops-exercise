@@ -4,8 +4,6 @@ import { updateUser } from '../services/userService';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-//TODO: SHOW TOAST AFTER EDIT.
-
 function UserDetailsForm({ userData, onSave }) {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({ ...userData });
